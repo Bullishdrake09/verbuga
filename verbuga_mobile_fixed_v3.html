@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+<meta name="theme-color" content="#0c1020" />
+<title>Verbuga — French Trainer</title>
+<style>
+  :root{
+    --bg:#080b16;--bg2:#0d1224;--card:rgba(255,255,255,.075);--card2:rgba(255,255,255,.045);
+    --line:rgba(255,255,255,.105);--text:#f7f8ff;--muted:#9ca6c6;--brand:#7868ff;--brand2:#48d9c7;
+    --good:#43d695;--bad:#ff6b7d;--warn:#ffcb66;--shadow:0 24px 70px rgba(0,0,0,.36);
+    --radius:26px;--safeB:env(safe-area-inset-bottom,0px);--safeT:env(safe-area-inset-top,0px)
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+  body{min-height:100dvh;overflow-x:hidden;background:
+    radial-gradient(900px 520px at 12% -5%,rgba(93,78,255,.22),transparent 55%),
+    radial-gradient(740px 540px at 95% 10%,rgba(50,216,198,.13),transparent 58%),
+    linear-gradient(180deg,#090c18 0%,#070a13 100%)}
+  button,input,select{font:inherit;color:inherit}
+  button{border:0}
+  .app{width:min(100%,560px);margin:0 auto;min-height:100dvh;position:relative;padding:calc(18px + var(--safeT)) 18px calc(106px + var(--safeB))}
+  .orb{position:fixed;filter:blur(70px);opacity:.2;pointer-events:none;border-radius:999px;z-index:0}.orb.a{width:180px;height:180px;background:#7163ff;top:8%;left:-90px}.orb.b{width:170px;height:170px;background:#38ddc5;right:-90px;top:34%}
+  header,.screen,.bottomnav,.toast,.sheetWrap{position:relative;z-index:2}
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .brand{display:flex;align-items:center;gap:11px}.logo{width:44px;height:44px;border-radius:15px;background:linear-gradient(135deg,#7767ff 0%,#6357ff 45%,#40d9c4 100%);display:grid;place-items:center;box-shadow:0 14px 30px rgba(102,86,255,.28);position:relative;overflow:hidden}
+  .logo:after{content:"";position:absolute;inset:1px;border-radius:14px;border:1px solid rgba(255,255,255,.28)}
+  .logo svg{width:27px;height:27px}.brandText strong{display:block;font-size:18px;letter-spacing:-.5px}.brandText span{display:block;color:var(--muted);font-size:11px;margin-top:1px}
+  .headActions{display:flex;gap:8px}.iconBtn{width:42px;height:42px;border-radius:14px;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;cursor:pointer;backdrop-filter:blur(18px)}.iconBtn:active{transform:scale(.96)}
+  .hero{padding:22px 21px 20px;border-radius:30px;background:
+    linear-gradient(135deg,rgba(115,96,255,.34),rgba(66,216,196,.15)),
+    rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.13);box-shadow:var(--shadow);overflow:hidden;position:relative}
+  .hero:before{content:"";position:absolute;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.2),transparent 65%);right:-80px;top:-105px}
+  .eyebrow{font-size:11px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:#c8c3ff}.hero h1{margin:9px 0 8px;font-size:31px;line-height:1.03;letter-spacing:-1.25px}.hero p{margin:0;color:#c0c8df;font-size:14px;line-height:1.48;max-width:390px}
+  .miniStats{display:flex;gap:8px;margin-top:18px}.statPill{padding:9px 11px;border-radius:14px;background:rgba(5,7,15,.3);border:1px solid rgba(255,255,255,.1);font-size:11px;color:#d7dbec}.statPill b{font-size:12px;color:white}
+  .sectionTitle{display:flex;align-items:end;justify-content:space-between;margin:24px 4px 11px}.sectionTitle h2{font-size:15px;margin:0;letter-spacing:-.2px}.sectionTitle span{color:var(--muted);font-size:11px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.choiceCard{min-height:118px;padding:16px;border-radius:23px;background:var(--card);border:1px solid var(--line);box-shadow:0 12px 35px rgba(0,0,0,.14);cursor:pointer;text-align:left;position:relative;overflow:hidden}.choiceCard:active{transform:scale(.985)}
+  .choiceCard .ico{width:39px;height:39px;border-radius:13px;display:grid;place-items:center;background:rgba(121,104,255,.16);color:#cfcaff;margin-bottom:15px}.choiceCard:nth-child(2) .ico{background:rgba(64,217,196,.13);color:#8ff3e5}.choiceCard b{display:block;font-size:14px;margin-bottom:5px}.choiceCard small{display:block;color:var(--muted);font-size:11px;line-height:1.35;padding-right:18px}.chev{position:absolute;right:14px;top:17px;color:#7e88a8}
+  .panel{padding:17px;border-radius:24px;background:var(--card2);border:1px solid var(--line);margin-top:11px}
+  .row{display:flex;gap:10px;align-items:center;justify-content:space-between}.row+.row{margin-top:13px;padding-top:13px;border-top:1px solid rgba(255,255,255,.07)}.row label{font-size:13px;font-weight:700}.row .sub{display:block;color:var(--muted);font-size:10px;margin-top:3px;font-weight:500}
+  .select{background:#10162a;border:1px solid var(--line);border-radius:13px;padding:10px 12px;font-size:12px;outline:none;max-width:54%}
+  .modeSeg{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mode{padding:11px 8px;border-radius:13px;background:#11172a;border:1px solid var(--line);font-size:11px;color:var(--muted);cursor:pointer}.mode.active{background:linear-gradient(135deg,rgba(119,103,255,.32),rgba(119,103,255,.15));color:#fff;border-color:rgba(143,131,255,.45);box-shadow:inset 0 0 0 1px rgba(255,255,255,.025)}
+  .range{width:100%;accent-color:#7868ff;margin-top:8px}.rangeLine{display:flex;justify-content:space-between;color:var(--muted);font-size:10px}.rangeValue{color:#fff;font-weight:800}
+  .primary{width:100%;margin-top:15px;padding:16px 18px;border-radius:18px;background:linear-gradient(135deg,#7463ff,#5e55f6 48%,#46cfbf);color:white;font-weight:850;font-size:14px;box-shadow:0 15px 32px rgba(98,83,247,.3);cursor:pointer}.primary:active{transform:scale(.985)}.primary[disabled]{opacity:.45;box-shadow:none}
+  .secondary{padding:12px 14px;border-radius:14px;background:var(--card);border:1px solid var(--line);color:#e8eaff;font-weight:700;font-size:12px;cursor:pointer}
+  .screen{display:none}.screen.active{display:block;animation:fade .22s ease}@keyframes fade{from{opacity:.3;transform:translateY(5px)}to{opacity:1;transform:none}}
+  .quizTop{display:flex;align-items:center;gap:10px;margin-bottom:14px}.quizTop .back{width:42px;height:42px;border-radius:14px;background:var(--card);border:1px solid var(--line);display:grid;place-items:center}.progressWrap{flex:1}.progressMeta{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:7px}.progress{height:7px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#7967ff,#46d4c1);border-radius:inherit;transition:width .25s ease}.scoreBubble{padding:9px 11px;border-radius:13px;background:rgba(67,214,149,.1);border:1px solid rgba(67,214,149,.22);font-size:11px;color:#9ff0c6;font-weight:800}
+  .questionCard{border-radius:30px;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.045));border:1px solid var(--line);box-shadow:var(--shadow);padding:25px 20px 20px;text-align:center;position:relative;overflow:hidden}.questionCard:before{content:"";position:absolute;inset:0;background:radial-gradient(320px 180px at 50% -50px,rgba(119,103,255,.18),transparent 72%);pointer-events:none}.qBadges{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;position:relative}.badge{padding:7px 10px;border-radius:999px;background:rgba(119,103,255,.12);border:1px solid rgba(146,135,255,.2);font-size:10px;font-weight:750;color:#c7c2ff;max-width:100%;line-height:1.25;text-align:center;white-space:normal}.badge.green{background:rgba(64,217,196,.09);border-color:rgba(64,217,196,.18);color:#8beadc}.infinitive{font-size:34px;font-weight:900;letter-spacing:-1.2px;margin:24px 0 4px;position:relative}.translation{font-size:12px;color:var(--muted);min-height:18px}.person{margin:19px auto 16px;font-size:15px;color:#eef0ff;font-weight:750}.person span{color:#7f89aa;margin-right:5px;font-weight:600}
+  .answerWrap{position:relative}.answer{width:100%;padding:17px 48px 17px 16px;text-align:center;border-radius:17px;border:1px solid rgba(255,255,255,.13);background:#0d1324;outline:none;font-size:17px;font-weight:750;letter-spacing:.1px;transition:.2s}.answer:focus{border-color:rgba(121,104,255,.68);box-shadow:0 0 0 4px rgba(121,104,255,.09)}.answer.good{border-color:rgba(67,214,149,.7);box-shadow:0 0 0 4px rgba(67,214,149,.08)}.answer.bad{border-color:rgba(255,107,125,.66);box-shadow:0 0 0 4px rgba(255,107,125,.08)}.speakBtn{position:absolute;right:8px;top:8px;width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.05);display:grid;place-items:center;color:#aab3cf}
+  .accents{display:flex;gap:6px;overflow-x:auto;padding:11px 1px 2px;scrollbar-width:none}.accents::-webkit-scrollbar{display:none}.accent{min-width:38px;height:35px;border-radius:11px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);font-weight:700;color:#dfe2f2}
+  .quizActions{display:grid;grid-template-columns:.72fr 1.5fr;gap:9px;margin-top:14px}.helpBtn{padding:14px;border-radius:16px;background:var(--card);border:1px solid var(--line);font-weight:800;font-size:12px}.checkBtn{padding:14px;border-radius:16px;background:linear-gradient(135deg,#7868ff,#5f55ef);font-weight:850;font-size:12px;box-shadow:0 12px 25px rgba(99,84,242,.24)}
+  .feedback{margin-top:11px;border-radius:19px;padding:14px 15px;text-align:left;display:none}.feedback.show{display:block;animation:fade .2s ease}.feedback.good{background:rgba(67,214,149,.09);border:1px solid rgba(67,214,149,.19)}.feedback.bad{background:rgba(255,107,125,.08);border:1px solid rgba(255,107,125,.18)}.feedback b{font-size:12px}.feedback p{font-size:11px;color:#bec6dc;margin:5px 0 0;line-height:1.4}.feedback .correctAns{font-weight:800;color:#fff}
+  .resultsHero{text-align:center;padding:28px 18px 23px;border-radius:30px;background:linear-gradient(145deg,rgba(119,103,255,.22),rgba(64,217,196,.08));border:1px solid var(--line);box-shadow:var(--shadow)}.ring{--p:0;width:116px;height:116px;border-radius:50%;margin:0 auto 17px;background:conic-gradient(#6f63ff calc(var(--p)*1%),rgba(255,255,255,.08) 0);display:grid;place-items:center;position:relative}.ring:before{content:"";position:absolute;inset:9px;background:#0c1120;border-radius:50%}.ring span{position:relative;font-size:27px;font-weight:900;letter-spacing:-1px}.resultsHero h2{font-size:21px;margin:0 0 5px}.resultsHero p{font-size:12px;color:var(--muted);margin:0}.resultsGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.resultStat{padding:12px 8px;border-radius:15px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.07)}.resultStat b{display:block;font-size:16px}.resultStat span{font-size:9px;color:var(--muted)}
+  .list{margin-top:12px}.listItem{display:flex;align-items:center;gap:11px;padding:12px 13px;border-radius:16px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07);margin-bottom:8px}.statusDot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}.statusDot.good{background:var(--good);box-shadow:0 0 0 4px rgba(67,214,149,.09)}.statusDot.bad{background:var(--bad);box-shadow:0 0 0 4px rgba(255,107,125,.08)}.listMain{min-width:0;flex:1}.listMain b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.listMain span{display:block;font-size:10px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.listAns{font-size:10px;text-align:right}.listAns .wrong{color:#ff8998;text-decoration:line-through;display:block}.listAns .right{color:#8ae4b8;display:block;margin-top:2px}
+  .conjSelects{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0}.fullSelect{width:100%;padding:13px;border-radius:15px;background:#10162a;border:1px solid var(--line);outline:none;font-size:12px}.conjCard{border-radius:23px;overflow:hidden;border:1px solid var(--line);background:var(--card2)}.conjHead{padding:16px 16px 12px}.conjHead b{font-size:21px}.conjHead span{display:block;color:var(--muted);font-size:10px;margin-top:3px}.conjRow{display:flex;justify-content:space-between;gap:14px;padding:12px 16px;border-top:1px solid rgba(255,255,255,.065);font-size:12px}.conjRow span:first-child{color:var(--muted)}.conjRow b{font-weight:800;text-align:right}
+  .bottomnav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + var(--safeB));width:min(calc(100% - 24px),536px);height:69px;border-radius:23px;background:rgba(11,15,29,.86);border:1px solid rgba(255,255,255,.105);box-shadow:0 20px 50px rgba(0,0,0,.48);backdrop-filter:blur(24px);display:grid;grid-template-columns:repeat(4,1fr);padding:7px;z-index:20}.navBtn{background:transparent;color:#7883a3;border-radius:17px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:8px;font-weight:700;cursor:pointer}.navBtn svg{width:20px;height:20px}.navBtn.active{background:rgba(119,103,255,.13);color:#d8d4ff}
+  .sheetWrap{position:fixed;inset:0;background:rgba(0,0,0,.56);backdrop-filter:blur(8px);z-index:50;display:none;align-items:flex-end;justify-content:center}.sheetWrap.show{display:flex}.sheet{width:min(100%,560px);height:min(90dvh,820px);max-height:90dvh;border-radius:30px 30px 0 0;background:#0e1324;border:1px solid rgba(255,255,255,.12);border-bottom:0;box-shadow:0 -24px 70px rgba(0,0,0,.45);padding:10px 16px calc(18px + var(--safeB));animation:up .28s cubic-bezier(.2,.8,.2,1);overflow:hidden;display:flex;flex-direction:column}@keyframes up{from{transform:translateY(25px);opacity:.3}to{transform:none;opacity:1}}.handle{width:45px;height:5px;background:rgba(255,255,255,.16);border-radius:99px;margin:0 auto 12px;flex:0 0 auto}.sheetHead{display:flex;align-items:center;justify-content:space-between;margin:0 2px 12px;flex:0 0 auto}.sheetHead h3{font-size:17px;margin:0}.close{width:34px;height:34px;border-radius:12px;background:rgba(255,255,255,.06);display:grid;place-items:center;color:#aab3ce}.search{width:100%;padding:13px 14px;border-radius:15px;background:#0a1020;border:1px solid var(--line);outline:none;font-size:12px;margin-bottom:10px;flex:0 0 auto}.quickFilters{display:flex;gap:7px;overflow-x:auto;padding:0 0 10px;scrollbar-width:none;flex:0 0 auto;position:relative;z-index:2}.quickFilters::-webkit-scrollbar{display:none}.chip{flex:0 0 auto;padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);font-size:10px;color:#aeb7d0}.chip.active{background:rgba(119,103,255,.18);border-color:rgba(119,103,255,.35);color:#ddd9ff}.sheetList{flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain;min-height:0;padding:7px 1px 12px;border-top:1px solid rgba(255,255,255,.065);scrollbar-gutter:stable}.pick{display:flex;align-items:center;gap:11px;padding:11px 10px;border-radius:14px;cursor:pointer}.pick:hover{background:rgba(255,255,255,.03)}.check{width:22px;height:22px;border-radius:8px;border:1px solid rgba(255,255,255,.16);display:grid;place-items:center;color:transparent;flex:0 0 auto}.pick.on .check{background:linear-gradient(135deg,#7868ff,#5d55ef);border-color:transparent;color:#fff}.pick .pickText{flex:1}.pick .pickText b{font-size:12px;display:block}.pick .pickText small{font-size:9px;color:var(--muted);display:block;margin-top:2px}.sheetFooter{display:grid;grid-template-columns:.72fr .95fr 1.45fr;gap:8px;margin-top:0;padding-top:10px;flex:0 0 auto;background:#0e1324;box-shadow:0 -12px 28px rgba(14,19,36,.94)}.sheetFooter.two{grid-template-columns:.8fr 1.2fr}.sheetFooter button{min-width:0;padding:13px 9px;border-radius:15px;font-size:10.5px;font-weight:800;white-space:nowrap}.ghost{background:rgba(255,255,255,.05);border:1px solid var(--line)}.done{background:linear-gradient(135deg,#7868ff,#5d55ef)}
+  .toast{position:fixed;left:50%;transform:translate(-50%,10px);bottom:calc(92px + var(--safeB));background:#151c31;border:1px solid rgba(255,255,255,.12);padding:11px 14px;border-radius:14px;font-size:11px;box-shadow:0 15px 35px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:.2s;z-index:80;max-width:calc(100% - 40px);text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}
+  .empty{padding:26px 18px;text-align:center;color:var(--muted);font-size:11px}.hidden{display:none!important}
+  @media (min-width:650px){.app{padding-top:28px}.bottomnav{bottom:18px}.sheet{border-radius:30px;margin-bottom:18px;border-bottom:1px solid rgba(255,255,255,.12)}}
+</style>
+</head>
+<body>
+<div class="orb a"></div><div class="orb b"></div>
+<div class="app">
+  <header>
+    <div class="brand"><div class="logo" aria-label="Verbuga logo"><svg viewBox="0 0 32 32" fill="none"><path d="M6 7.5 14.2 25h3.6L26 7.5h-5.2L16 19 11.2 7.5H6Z" fill="white"/><path d="M16 6v20" stroke="rgba(255,255,255,.35)" stroke-width="1"/></svg></div><div class="brandText"><strong>Verbuga</strong><span>Franse werkwoorden · mobile</span></div></div>
+    <div class="headActions"><button class="iconBtn" id="soundToggle" title="Geluid"><span>🔊</span></button></div>
+  </header>
+
+  <main>
+    <section class="screen active" id="homeScreen">
+      <div class="hero">
+        <div class="eyebrow">Slimmer oefenen</div>
+        <h1>Frans dat eindelijk<br>blijft hangen.</h1>
+        <p>Kies precies welke werkwoorden en tijden je wilt oefenen. Kort, snel en zonder afleiding.</p>
+        <div class="miniStats"><div class="statPill">🔥 <b id="streakMini">0</b> reeks</div><div class="statPill">✓ <b id="totalMini">0</b> juist</div><div class="statPill">★ <b id="bestMini">0%</b> beste</div></div>
+      </div>
+
+      <div class="sectionTitle"><h2>Stel je oefening in</h2><span>alles aanpasbaar</span></div>
+      <div class="grid">
+        <button class="choiceCard" id="verbsCard"><div class="ico">V</div><span class="chev">›</span><b>Werkwoorden</b><small id="verbsSummary">6 geselecteerd</small></button>
+        <button class="choiceCard" id="tensesCard"><div class="ico">T</div><span class="chev">›</span><b>Tijden</b><small id="tensesSummary">3 geselecteerd</small></button>
+      </div>
+
+      <div class="panel">
+        <div class="row"><div><label>Vraagmodus</label><span class="sub">Hoe de vragen verschijnen</span></div></div>
+        <div class="modeSeg" id="modeSeg">
+          <button class="mode active" data-mode="random">Willekeurig</button><button class="mode" data-mode="unique">Zonder dubbels</button><button class="mode" data-mode="fixed">Vaste volgorde</button><button class="mode" data-mode="flash">Flashcards</button>
+        </div>
+        <div class="row"><div><label>Weergavetaal</label><span class="sub">Interface & uitleg</span></div><select class="select" id="displayLang"><option>Nederlands</option><option>Français</option><option>English</option></select></div>
+        <div class="row"><div><label>Vertaling</label><span class="sub">Bij het infinitief</span></div><select class="select" id="translation"><option value="nl">Nederlands</option><option value="en">English</option><option value="none">Geen</option></select></div>
+        <div class="row" style="display:block"><div class="rangeLine"><span>Aantal vragen</span><span class="rangeValue" id="questionCountLabel">20</span></div><input class="range" id="questionCount" type="range" min="5" max="60" step="5" value="20"></div>
+      </div>
+      <button class="primary" id="startBtn">Start oefening →</button>
+    </section>
+
+    <section class="screen" id="quizScreen">
+      <div class="quizTop"><button class="back" id="quitQuiz">‹</button><div class="progressWrap"><div class="progressMeta"><span id="qCounter">Vraag 1/20</span><span id="streakText">reeks 0</span></div><div class="progress"><i id="progressBar"></i></div></div><div class="scoreBubble" id="scoreBubble">0%</div></div>
+      <div class="questionCard">
+        <div class="qBadges"><div class="badge" id="tenseBadge">Indicatif présent</div><div class="badge green" id="groupBadge">irrégulier</div></div>
+        <div class="infinitive" id="qVerb">avoir</div><div class="translation" id="qTranslation">hebben</div><div class="person"><span>Vervoeg voor</span><b id="qPerson">nous</b></div>
+        <div class="answerWrap"><input id="answerInput" class="answer" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="typ je antwoord…"><button class="speakBtn" id="speakBtn">🔈</button></div>
+        <div class="accents" id="accents"><button class="accent">é</button><button class="accent">è</button><button class="accent">ê</button><button class="accent">ë</button><button class="accent">à</button><button class="accent">â</button><button class="accent">î</button><button class="accent">ï</button><button class="accent">ô</button><button class="accent">ù</button><button class="accent">û</button><button class="accent">ü</button><button class="accent">ç</button><button class="accent">œ</button><button class="accent">’</button></div>
+        <div class="quizActions"><button class="helpBtn" id="hintBtn">💡 Hulp</button><button class="checkBtn" id="checkBtn">Nakijken</button></div>
+        <div class="feedback" id="feedback"><b id="feedbackTitle">Goed!</b><p id="feedbackText"></p></div>
+      </div>
+    </section>
+
+    <section class="screen" id="conjScreen">
+      <div class="sectionTitle" style="margin-top:2px"><h2>Vervoegingsoverzicht</h2><span>tik om te luisteren</span></div>
+      <div class="conjSelects"><select class="fullSelect" id="conjVerb"></select><select class="fullSelect" id="conjTense"></select></div>
+      <div class="conjCard" id="conjCard"></div>
+    </section>
+
+    <section class="screen" id="resultsScreen">
+      <div class="resultsHero"><div class="ring" id="resultRing"><span id="resultPct">0%</span></div><h2 id="resultTitle">Je resultaat</h2><p id="resultSub">Nog geen oefening afgerond.</p><div class="resultsGrid"><div class="resultStat"><b id="resCorrect">0</b><span>juist</span></div><div class="resultStat"><b id="resWrong">0</b><span>fout</span></div><div class="resultStat"><b id="resStreak">0</b><span>beste reeks</span></div></div></div>
+      <div class="sectionTitle"><h2>Laatste antwoorden</h2><span id="resultCount">0 vragen</span></div><div class="list" id="resultList"><div class="empty">Voltooi eerst een oefening om je resultaten te zien.</div></div>
+      <button class="primary hidden" id="retryWrong">Oefen fouten opnieuw</button>
+    </section>
+  </main>
+</div>
+
+<nav class="bottomnav" id="bottomnav">
+  <button class="navBtn active" data-screen="homeScreen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 10.7 12 3l9 7.7V21h-6v-6H9v6H3V10.7Z"/></svg><span>Start</span></button>
+  <button class="navBtn" data-screen="quizScreen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h5"/></svg><span>Oefenen</span></button>
+  <button class="navBtn" data-screen="conjScreen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z"/><path d="M8 7h8M8 11h6"/></svg><span>Vervoegen</span></button>
+  <button class="navBtn" data-screen="resultsScreen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 20V10h3v10H5Zm6 0V4h3v16h-3Zm6 0v-7h3v7h-3Z"/></svg><span>Resultaten</span></button>
+</nav>
+
+<div class="sheetWrap" id="verbsSheet"><div class="sheet"><div class="handle"></div><div class="sheetHead"><h3>Kies werkwoorden</h3><button class="close">×</button></div><input class="search" id="verbSearch" placeholder="Zoek een werkwoord…"><div class="quickFilters" id="verbFilters"><button class="chip active" data-filter="all">Alles</button><button class="chip" data-filter="irregular">Onregelmatig</button><button class="chip" data-filter="er">-er</button><button class="chip" data-filter="ir">-ir</button><button class="chip" data-filter="re">-re</button><button class="chip" data-filter="pronominal">Pronominaal</button></div><div class="sheetList" id="verbList"></div><div class="sheetFooter"><button class="ghost" id="clearVerbs">Geen</button><button class="ghost" id="selectAllVerbs">Alles kiezen</button><button class="done" id="doneVerbs">Klaar · <span id="verbCountDone">0</span></button></div></div></div>
+<div class="sheetWrap" id="tensesSheet"><div class="sheet"><div class="handle"></div><div class="sheetHead"><h3>Kies tijden</h3><button class="close">×</button></div><div class="sheetList" id="tenseList"></div><div class="sheetFooter two"><button class="ghost" id="clearTenses">Geen</button><button class="done" id="doneTenses">Klaar · <span id="tenseCountDone">0</span></button></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const APP_BUILD="2026-09-29-fix2";
+const VERBS = [
+"aimer","acheter","aller","apercevoir","s'apercevoir","s'appeler","appliquer","arriver","s'asseoir","attendre","avertir","avoir","battre","abattre","se battre","combattre","boire","bouillir","chercher","choisir","commencer","conclure","conduire","se conduire","construire","cuire","détruire","introduire","produire","réduire","connaître","reconnaître","paraître","apparaître","disparaître","correspondre","se coucher","coudre","courir","accourir","parcourir","secourir","couvrir","découvrir","ouvrir","offrir","souffrir","croire","cueillir","accueillir","recueillir","descendre","descendre (tr.)","devoir","dire","donner","dormir","écrire","décrire","inscrire","envoyer","renvoyer","employer","entendre","essayer","être","faire","refaire","satisfaire","falloir","finir","fuir","geler","interrompre","rompre","jeter","se laver","lever","se lever","lire","manger","mentir","mettre","admettre","commettre","permettre","promettre","remettre","soumettre","mordre","mourir","naître","nettoyer","parler","partir","repartir","se plaindre","plaindre","craindre","atteindre","éteindre","peindre","rejoindre","perdre","plaire","pleuvoir","pouvoir","préférer","prendre","apprendre","comprendre","entreprendre","reprendre","surprendre","se promener","punir","recevoir","réfléchir","regarder","remplir","rencontrer","rendre","répondre","rentrer (intr.)","résoudre","rester","retourner (intr.)","réussir","rire","sourire","savoir","sentir","servir","sortir","suffire","suivre","poursuivre","se taire","tenir","appartenir","contenir","entretenir","maintenir","obtenir","retenir","soutenir","tomber","se tromper","vaincre","convaincre","valoir","vendre","venir","convenir","devenir","intervenir","parvenir","prévenir","revenir","provenir","vivre","voir","vouloir"];
+const TENSES = ["Présent","Futur Proche","Passé Composé","Imparfait","Futur","Conditionnel / Futur du Passé","Plus-que-Parfait","Impératif","Subjonctif Présent","Participe Présent","Passé Simple","Conditionnel Passé","Futur Antérieur","Subjonctif Passé"];
+const TENSE_LABELS={"Présent":"Indicatif présent","Futur Proche":"Futur proche","Passé Composé":"Indicatif passé composé","Imparfait":"Indicatif imparfait","Futur":"Indicatif futur simple","Conditionnel / Futur du Passé":"Conditionnel présent / futur du passé","Plus-que-Parfait":"Indicatif plus-que-parfait","Impératif":"Impératif présent","Subjonctif Présent":"Subjonctif présent","Participe Présent":"Participe présent","Passé Simple":"Indicatif passé simple","Conditionnel Passé":"Conditionnel passé","Futur Antérieur":"Indicatif futur antérieur","Subjonctif Passé":"Subjonctif passé"};
+function tenseLabel(t){return TENSE_LABELS[t]||t}
+const PERSONS=["je","tu","il / elle","nous","vous","ils / elles"];
+const BASE_SUBJECTS=["je","tu","il","nous","vous","ils"];
+const SUBJECT_VARIANTS=[
+  {person:0,subject:"je"},{person:1,subject:"tu"},{person:2,subject:"il"},{person:2,subject:"elle"},
+  {person:3,subject:"nous"},{person:4,subject:"vous"},{person:5,subject:"ils"},{person:5,subject:"elles"}
+];
+const IMPERSONAL_VERBS=new Set(["falloir","pleuvoir","neiger"]);
+const COMPOUND_TENSES=new Set(["Passé Composé","Plus-que-Parfait","Conditionnel Passé","Futur Antérieur","Subjonctif Passé"]);
+const translations={
+  aimer:["houden van","to love"],acheter:["kopen","to buy"],aller:["gaan","to go"],arriver:["aankomen","to arrive"],attendre:["wachten","to wait"],avoir:["hebben","to have"],boire:["drinken","to drink"],chercher:["zoeken","to look for"],choisir:["kiezen","to choose"],commencer:["beginnen","to begin"],conduire:["rijden","to drive"],connaître:["kennen","to know"],courir:["rennen","to run"],croire:["geloven","to believe"],devoir:["moeten","to have to"],dire:["zeggen","to say"],donner:["geven","to give"],dormir:["slapen","to sleep"],écrire:["schrijven","to write"],envoyer:["sturen","to send"],entendre:["horen","to hear"],être:["zijn","to be"],faire:["doen / maken","to do / make"],finir:["eindigen","to finish"],lire:["lezen","to read"],manger:["eten","to eat"],mettre:["zetten / doen","to put"],mourir:["sterven","to die"],naître:["geboren worden","to be born"],parler:["spreken","to speak"],partir:["vertrekken","to leave"],perdre:["verliezen","to lose"],pouvoir:["kunnen","can / to be able"],prendre:["nemen","to take"],recevoir:["ontvangen","to receive"],regarder:["kijken","to watch"],répondre:["antwoorden","to answer"],rester:["blijven","to stay"],rire:["lachen","to laugh"],savoir:["weten","to know"],sentir:["voelen / ruiken","to feel / smell"],servir:["dienen","to serve"],sortir:["uitgaan","to go out"],suivre:["volgen","to follow"],tenir:["houden","to hold"],tomber:["vallen","to fall"],vendre:["verkopen","to sell"],venir:["komen","to come"],vivre:["leven","to live"],voir:["zien","to see"],vouloir:["willen","to want"]
+};
+const PRESENT={
+  avoir:["ai","as","a","avons","avez","ont"],être:["suis","es","est","sommes","êtes","sont"],aller:["vais","vas","va","allons","allez","vont"],faire:["fais","fais","fait","faisons","faites","font"],pouvoir:["peux","peux","peut","pouvons","pouvez","peuvent"],vouloir:["veux","veux","veut","voulons","voulez","veulent"],devoir:["dois","dois","doit","devons","devez","doivent"],savoir:["sais","sais","sait","savons","savez","savent"],venir:["viens","viens","vient","venons","venez","viennent"],tenir:["tiens","tiens","tient","tenons","tenez","tiennent"],prendre:["prends","prends","prend","prenons","prenez","prennent"],mettre:["mets","mets","met","mettons","mettez","mettent"],dire:["dis","dis","dit","disons","dites","disent"],lire:["lis","lis","lit","lisons","lisez","lisent"],écrire:["écris","écris","écrit","écrivons","écrivez","écrivent"],voir:["vois","vois","voit","voyons","voyez","voient"],croire:["crois","crois","croit","croyons","croyez","croient"],boire:["bois","bois","boit","buvons","buvez","boivent"],vivre:["vis","vis","vit","vivons","vivez","vivent"],rire:["ris","ris","rit","rions","riez","rient"],suivre:["suis","suis","suit","suivons","suivez","suivent"],recevoir:["reçois","reçois","reçoit","recevons","recevez","reçoivent"],courir:["cours","cours","court","courons","courez","courent"],mourir:["meurs","meurs","meurt","mourons","mourez","meurent"],naître:["nais","nais","naît","naissons","naissez","naissent"],dormir:["dors","dors","dort","dormons","dormez","dorment"],partir:["pars","pars","part","partons","partez","partent"],sortir:["sors","sors","sort","sortons","sortez","sortent"],servir:["sers","sers","sert","servons","servez","servent"],sentir:["sens","sens","sent","sentons","sentez","sentent"],mentir:["mens","mens","ment","mentons","mentez","mentent"],ouvrir:["ouvre","ouvres","ouvre","ouvrons","ouvrez","ouvrent"],offrir:["offre","offres","offre","offrons","offrez","offrent"],souffrir:["souffre","souffres","souffre","souffrons","souffrez","souffrent"],couvrir:["couvre","couvres","couvre","couvrons","couvrez","couvrent"],cueillir:["cueille","cueilles","cueille","cueillons","cueillez","cueillent"],fuir:["fuis","fuis","fuit","fuyons","fuyez","fuient"],falloir:["faut","faut","faut","faut","faut","faut"],pleuvoir:["pleut","pleut","pleut","pleut","pleut","pleuvent"],valoir:["vaux","vaux","vaut","valons","valez","valent"],plaire:["plais","plais","plaît","plaisons","plaisez","plaisent"],conduire:["conduis","conduis","conduit","conduisons","conduisez","conduisent"],connaître:["connais","connais","connaît","connaissons","connaissez","connaissent"],paraître:["parais","parais","paraît","paraissons","paraissez","paraissent"],vaincre:["vaincs","vaincs","vainc","vainquons","vainquez","vainquent"],résoudre:["résous","résous","résout","résolvons","résolvez","résolvent"],coudre:["couds","couds","coud","cousons","cousez","cousent"],bouillir:["bous","bous","bout","bouillons","bouillez","bouillent"],battre:["bats","bats","bat","battons","battez","battent"],rompre:["romps","romps","rompt","rompons","rompez","rompent"],conclure:["conclus","conclus","conclut","concluons","concluez","concluent"],"se taire":["me tais","te tais","se tait","nous taisons","vous taisez","se taisent"]
+};
+const FUTURE_STEMS={avoir:"aur",être:"ser",aller:"ir",faire:"fer",pouvoir:"pourr",vouloir:"voudr",devoir:"devr",savoir:"saur",venir:"viendr",tenir:"tiendr",voir:"verr",envoyer:"enverr",recevoir:"recevr",courir:"courr",mourir:"mourr",falloir:"faudr",pleuvoir:"pleuvr",valoir:"vaudr",acheter:"achèter",lever:"lèver",jeter:"jetter",appeler:"appeller"};
+const PP={avoir:"eu",être:"été",faire:"fait",aller:"allé",pouvoir:"pu",vouloir:"voulu",devoir:"dû",savoir:"su",venir:"venu",tenir:"tenu",prendre:"pris",mettre:"mis",dire:"dit",lire:"lu",écrire:"écrit",voir:"vu",croire:"cru",boire:"bu",vivre:"vécu",rire:"ri",suivre:"suivi",recevoir:"reçu",courir:"couru",mourir:"mort",naître:"né",dormir:"dormi",partir:"parti",sortir:"sorti",servir:"servi",sentir:"senti",ouvrir:"ouvert",offrir:"offert",souffrir:"souffert",couvrir:"couvert",cueillir:"cueilli",fuir:"fui",falloir:"fallu",pleuvoir:"plu",valoir:"valu",plaire:"plu",conduire:"conduit",connaître:"connu",paraître:"paru",vaincre:"vaincu",résoudre:"résolu",coudre:"cousu",bouillir:"bouilli",battre:"battu",rompre:"rompu",conclure:"conclu",asseoir:"assis",apercevoir:"aperçu",plaindre:"plaint",craindre:"craint",atteindre:"atteint",éteindre:"éteint",peindre:"peint",taire:"tu",attendre:"attendu",entendre:"entendu",perdre:"perdu",vendre:"vendu",rendre:"rendu",répondre:"répondu",mordre:"mordu"};
+const SUBJ={avoir:["aie","aies","ait","ayons","ayez","aient"],être:["sois","sois","soit","soyons","soyez","soient"],aller:["aille","ailles","aille","allions","alliez","aillent"],faire:["fasse","fasses","fasse","fassions","fassiez","fassent"],pouvoir:["puisse","puisses","puisse","puissions","puissiez","puissent"],vouloir:["veuille","veuilles","veuille","voulions","vouliez","veuillent"],savoir:["sache","saches","sache","sachions","sachiez","sachent"],venir:["vienne","viennes","vienne","venions","veniez","viennent"],tenir:["tienne","tiennes","tienne","tenions","teniez","tiennent"],prendre:["prenne","prennes","prenne","prenions","preniez","prennent"]};
+const PASSE_STEMS={avoir:"e",être:"fu",faire:"fi",voir:"vi",venir:"vin",tenir:"tin",prendre:"pri",mettre:"mi",dire:"di",écrire:"écrivi",lire:"lu",boire:"bu",croire:"cru",vivre:"vécu",pouvoir:"pu",vouloir:"voulu",devoir:"du",savoir:"su",recevoir:"reçu",mourir:"mouru",naître:"naqui",courir:"couru",conduire:"conduisi"};
+const ETRE_AUX=new Set(["aller","arriver","venir","devenir","revenir","parvenir","intervenir","provenir","partir","repartir","sortir","naître","mourir","tomber","rester","rentrer (intr.)","retourner (intr.)","descendre"]);
+const IRREGULAR_ROOTS=["avoir","être","aller","faire","pouvoir","vouloir","devoir","savoir","venir","tenir","prendre","mettre","dire","lire","écrire","voir","croire","boire","vivre","rire","suivre","recevoir","courir","mourir","naître","dormir","partir","sortir","servir","sentir","mentir","ouvrir","offrir","souffrir","couvrir","cueillir","fuir","falloir","pleuvoir","valoir","plaire","conduire","connaître","paraître","vaincre","résoudre","coudre","bouillir","battre","rompre","conclure"];
+function cleanVerb(v){return v.replace(/ \([^)]*\)$/,'').trim()}
+function splitReflexive(v){v=cleanVerb(v);const m=v.match(/^(s'|se )(.*)$/);return m?{ref:true,base:m[2]}:{ref:false,base:v}}
+function deriveBase(v){
+  const x=cleanVerb(v); const r=splitReflexive(x); let b=r.base;
+  // Exacte onregelmatige werkwoorden moeten ALTIJD eerst winnen.
+  // Anders werd bv. avoir fout gezien als a + voir, waardoor 'ont' -> 'avoient'.
+  if(IRREGULAR_ROOTS.includes(b)) return {root:b,prefix:"",ref:r.ref};
+  const groups=["prendre","mettre","venir","tenir","écrire","conduire","connaître","paraître","courir","couvrir","battre","rompre","faire","voir","suivre","vaincre","plaire"];
+  for(const g of groups){if(b!==g&&b.endsWith(g)) return {root:g,prefix:b.slice(0,-g.length),ref:r.ref};}
+  return {root:b,prefix:"",ref:r.ref};
+}
+function isIrregular(v){const {root}=deriveBase(v); return IRREGULAR_ROOTS.includes(root)||["acheter","jeter","lever","geler","préférer","essayer","employer","nettoyer","envoyer","s'appeler","s'asseoir","apercevoir"].some(x=>cleanVerb(v).includes(x));}
+function regularPresent(v){
+  const b=splitReflexive(v).base;
+  if(b.endsWith('er')){let stem=b.slice(0,-2), forms=[stem+'e',stem+'es',stem+'e',stem+'ons',stem+'ez',stem+'ent'];
+    if(b.endsWith('ger')) forms[3]=stem+'eons';
+    if(b.endsWith('cer')) forms[3]=stem.slice(0,-1)+'çons';
+    if(/(yer)$/.test(b)){let s=stem.slice(0,-1)+'i'; forms=[s+'e',s+'es',s+'e',stem+'ons',stem+'ez',s+'ent'];}
+    if(['acheter','geler','lever','se lever'].includes(cleanVerb(v))||b.endsWith('mener')){let s=stem.replace(/e([^e]*)$/,'è$1');forms=[s+'e',s+'es',s+'e',stem+'ons',stem+'ez',s+'ent'];}
+    if(b.endsWith('jeter')){let s=stem+'t';forms=[s+'e',s+'es',s+'e',stem+'ons',stem+'ez',s+'ent'];}
+    if(b.endsWith('appeler')){let s=stem+'l';forms=[s+'e',s+'es',s+'e',stem+'ons',stem+'ez',s+'ent'];}
+    if(b==='préférer'){forms=['préfère','préfères','préfère','préférons','préférez','préfèrent'];}
+    return forms;
+  }
+  if(b.endsWith('ir')){const stem=b.slice(0,-2);return [stem+'is',stem+'is',stem+'it',stem+'issons',stem+'issez',stem+'issent'];}
+  if(b.endsWith('re')){const stem=b.slice(0,-2);return [stem+'s',stem+'s',stem,stem+'ons',stem+'ez',stem+'ent'];}
+  return [b,b,b,b,b,b];
+}
+function applyPrefixForms(forms,prefix){return forms.map(f=>prefix+f)}
+function startsWithVowelSound(text){return /^[aeiouyàâäéèêëîïôöùûüœh]/i.test(String(text).trim())}
+function reflexivePronoun(i,next=''){
+  const p=['me','te','se','nous','vous','se'][i]||'se';
+  if((p==='me'||p==='te'||p==='se')&&startsWithVowelSound(next)) return p[0]+"'";
+  return p+' ';
+}
+function addReflexive(v,forms){
+  if(!splitReflexive(v).ref)return forms;
+  return forms.map((x,i)=>reflexivePronoun(i,x)+x);
+}
+function presentForms(v){
+  const raw=cleanVerb(v), r=splitReflexive(raw), {root,prefix}=deriveBase(raw); let f;
+  // Sommige pronominale onregelmatige werkwoorden staan als volledige vorm in de tabel.
+  if(PRESENT[raw]) return PRESENT[raw].slice();
+  if(PRESENT[root]) f=applyPrefixForms(PRESENT[root],prefix);
+  else f=regularPresent(raw);
+  return r.ref?addReflexive(raw,f):f;
+}
+function futureStem(v){const {root,prefix}=deriveBase(v); let s=FUTURE_STEMS[root]||FUTURE_STEMS[cleanVerb(v)];if(s)return prefix+s;const b=splitReflexive(v).base;return b.endsWith('re')?b.slice(0,-1):b;}
+function futureForms(v){const s=futureStem(v),e=['ai','as','a','ons','ez','ont'];return addReflexive(v,e.map(x=>s+x))}
+function conditionalForms(v){const s=futureStem(v),e=['ais','ais','ait','ions','iez','aient'];return addReflexive(v,e.map(x=>s+x))}
+function stripReflexivePrefix(x){return x.replace(/^(?:m'|t'|s'|me |te |se |nous |vous )/,'')}
+function imperfectForms(v){
+  const r=splitReflexive(v);
+  if(r.base==='être')return ['étais','étais','était','étions','étiez','étaient'];
+  if(r.base==='falloir')return ['fallait','fallait','fallait','fallait','fallait','fallait'];
+  if(r.base==='pleuvoir')return ['pleuvait','pleuvait','pleuvait','pleuvait','pleuvait','pleuvait'];
+  const p=presentForms(r.base).map(stripReflexivePrefix);let stem=p[3].replace(/ons$/,'');const e=['ais','ais','ait','ions','iez','aient'];
+  return addReflexive(v,e.map(x=>stem+x));
+}
+function pastParticiple(v){const raw=cleanVerb(v);const {root,prefix}=deriveBase(raw);if(PP[root])return prefix+PP[root];const b=splitReflexive(raw).base;if(b.endsWith('er'))return b.slice(0,-2)+'é';if(b.endsWith('ir'))return b.slice(0,-2)+'i';if(b.endsWith('re'))return b.slice(0,-2)+'u';return b;}
+function auxVerb(v){const raw=cleanVerb(v),ref=splitReflexive(raw).ref;return ref||ETRE_AUX.has(raw)?'être':'avoir'}
+function compoundFromAuxForms(v,a){
+  const pp=pastParticiple(v),ref=splitReflexive(v).ref;
+  return a.map((x,i)=>(ref?reflexivePronoun(i,x):'')+x+' '+pp);
+}
+function compound(v,auxTense){const aux=auxVerb(v),a=conjugate(aux,auxTense);return compoundFromAuxForms(v,a)}
+function subjForms(v){
+  const raw=cleanVerb(v),r=splitReflexive(raw),{root,prefix}=deriveBase(raw);let f;
+  if(r.base==='falloir')f=['faille','faille','faille','faille','faille','faille'];
+  else if(r.base==='pleuvoir')f=['pleuve','pleuve','pleuve','pleuve','pleuve','pleuve'];
+  else if(SUBJ[root])f=applyPrefixForms(SUBJ[root],prefix);
+  else{const p=presentForms(r.base).map(stripReflexivePrefix);const stemA=p[5].replace(/ent$/,''), stemB=p[3].replace(/ons$/,'');f=[stemA+'e',stemA+'es',stemA+'e',stemB+'ions',stemB+'iez',stemA+'ent'];}
+  return r.ref?addReflexive(raw,f):f;
+}
+function participePresent(v){const r=splitReflexive(v),b=r.base;if(b==='avoir')return ['ayant'];if(b==='être')return ['étant'];if(b==='savoir')return ['sachant'];if(b==='falloir')return ['fallant'];if(b==='pleuvoir')return ['pleuvant'];const p=presentForms(b).map(stripReflexivePrefix);const form=p[3].replace(/ons$/,'')+'ant';return [r.ref?(startsWithVowelSound(form)?"s'":'se ')+form:form]}
+function passeSimple(v){
+  const r=splitReflexive(v),b=r.base,{root,prefix}=deriveBase(v);let forms,stem=PASSE_STEMS[root];
+  if(b==='falloir')forms=['fallut','fallut','fallut','fallut','fallut','fallut'];
+  if(b==='pleuvoir')forms=['plut','plut','plut','plut','plut','plut'];
+  if(stem){stem=prefix+stem;if(['venir','tenir','prendre','mettre','dire','faire','voir'].includes(root)){const e=['s','s','t','mes','tes','rent'];forms=e.map(x=>stem+x)}}
+  if(!forms&&b.endsWith('er')){const s=b.slice(0,-2),e=['ai','as','a','âmes','âtes','èrent'];forms=e.map(x=>s+x)}
+  if(!forms){const pp=pastParticiple(b);let s=pp.replace(/[ui]$/,'');const e=['is','is','it','îmes','îtes','irent'];forms=e.map(x=>s+x)}
+  return r.ref?addReflexive(v,forms):forms;
+}
+function imperative(v){
+  const r=splitReflexive(v),p=presentForms(r.base);let a=[p[1],p[3],p[4]];const b=r.base;
+  if(b.endsWith('er')||b==='aller')a[0]=a[0].replace(/s$/,'');
+  if(r.ref)a=[a[0]+'-toi',a[1]+'-nous',a[2]+'-vous'];
+  return a;
+}
+function futurProcheForms(v){
+  const a=presentForms('aller'),r=splitReflexive(v),inf=r.base;
+  if(!r.ref)return a.map(x=>x+' '+inf);
+  return a.map((x,i)=>x+' '+reflexivePronoun(i,inf)+inf);
+}
+function conjugate(v,t){
+  switch(t){case 'Présent':return presentForms(v);case 'Futur':return futureForms(v);case 'Imparfait':return imperfectForms(v);case 'Conditionnel / Futur du Passé':return conditionalForms(v);case 'Futur Proche':return futurProcheForms(v);case 'Passé Composé':return compound(v,'Présent');case 'Plus-que-Parfait':return compound(v,'Imparfait');case 'Conditionnel Passé':return compound(v,'Conditionnel / Futur du Passé');case 'Futur Antérieur':return compound(v,'Futur');case 'Subjonctif Présent':return subjForms(v);case 'Subjonctif Passé':{const aux=auxVerb(v),a=subjForms(aux);return compoundFromAuxForms(v,a)}case 'Participe Présent':return participePresent(v);case 'Passé Simple':return passeSimple(v);case 'Impératif':return imperative(v);default:return presentForms(v)}
+}
+function isImpersonal(v){return IMPERSONAL_VERBS.has(splitReflexive(v).base)}
+function subjectTraits(subject){
+  if(subject==='elle')return {feminine:true,plural:false};
+  if(subject==='elles')return {feminine:true,plural:true};
+  if(subject==='ils'||subject==='nous'||subject==='vous')return {feminine:false,plural:true};
+  return {feminine:false,plural:false};
+}
+function agreeParticiple(pp,subject){
+  const {feminine,plural}=subjectTraits(subject);let out=pp;
+  if(feminine){
+    if(/s$/.test(out)) out=out.slice(0,-1)+'se';
+    else if(!/e$/.test(out)) out+='e';
+  }
+  if(plural&&!/[sx]$/.test(out))out+='s';
+  return out;
+}
+function applySubjectAgreement(v,t,form,subject){
+  if(!COMPOUND_TENSES.has(t)||auxVerb(v)!=='être')return form;
+  const pp=pastParticiple(v),agreed=agreeParticiple(pp,subject);
+  return form.endsWith(pp)?form.slice(0,-pp.length)+agreed:form;
+}
+function formForSubject(v,t,person,subject){
+  const forms=conjugate(v,t);const base=forms[Math.min(person,forms.length-1)];
+  return applySubjectAgreement(v,t,base,subject);
+}
+function subjectVariantsFor(v,t){
+  if(t==='Participe Présent')return [{person:0,subject:'forme'}];
+  if(t==='Impératif')return isImpersonal(v)?[]:[{person:0,subject:'tu'},{person:1,subject:'nous'},{person:2,subject:'vous'}];
+  if(isImpersonal(v))return [{person:2,subject:'il'}];
+  return SUBJECT_VARIANTS;
+}
+function acceptableFormsForQuestion(q){
+  const canonical=formForSubject(q.verb,q.tense,q.person,q.subject||BASE_SUBJECTS[q.person]);
+  if(!COMPOUND_TENSES.has(q.tense)||auxVerb(q.verb)!=='être')return [canonical];
+  let subjects=[q.subject];
+  if(q.subject==='je'||q.subject==='tu')subjects=['il','elle'];
+  else if(q.subject==='nous')subjects=['ils','elles'];
+  else if(q.subject==='vous')subjects=['il','elle','ils','elles'];
+  return [...new Set(subjects.filter(Boolean).map(s=>formForSubject(q.verb,q.tense,q.person,s)))];
+}
+// Interne controles om te voorkomen dat tijdlabel en antwoord ooit uiteenlopen.
+(function conjugationSanityChecks(){
+  const checks=[
+    ['combattre','Passé Composé',5,'ont combattu'],
+    ['combattre','Plus-que-Parfait',5,'avaient combattu'],
+    ['vivre','Futur Antérieur',0,'aurai vécu'],
+    ['se battre','Futur',0,'me battrai'],
+    ['se battre','Imparfait',0,'me battais'],
+    ['se battre','Passé Composé',0,'me suis battu'],
+    ['se battre','Futur Proche',0,'vais me battre'],
+    ['se battre','Impératif',0,'bats-toi'],
+    ["s'appeler",'Présent',0,"m'appelle"],
+    ['se taire','Présent',0,'me tais'],
+    ['falloir','Imparfait',2,'fallait'],
+    ['pleuvoir','Imparfait',2,'pleuvait']
+  ];
+  for(const [verb,tense,person,expected] of checks){
+    const got=conjugate(verb,tense)[person];
+    if(got!==expected) console.error('Verbuga conjugatiefout:',{verb,tense,person,expected,got});
+  }
+  const subjectChecks=[
+    ['se tromper','Plus-que-Parfait',5,'ils',"s'étaient trompés"],
+    ['se tromper','Plus-que-Parfait',5,'elles',"s'étaient trompées"],
+    ['aller','Passé Composé',5,'ils','sont allés'],
+    ['aller','Passé Composé',5,'elles','sont allées']
+  ];
+  for(const [verb,tense,person,subject,expected] of subjectChecks){
+    const got=formForSubject(verb,tense,person,subject);
+    if(got!==expected) console.error('Verbuga akkoordfout:',{verb,tense,person,subject,expected,got});
+  }
+})();
+const defaultVerbs=['avoir','être','aller','faire','parler','prendre'];
+const defaultTenses=['Présent','Passé Composé','Imparfait'];
+let state={selectedVerbs:new Set(JSON.parse(localStorage.getItem('vb_verbs')||JSON.stringify(defaultVerbs))),selectedTenses:new Set(JSON.parse(localStorage.getItem('vb_tenses')||JSON.stringify(defaultTenses))),mode:localStorage.getItem('vb_mode')||'random',questionCount:+(localStorage.getItem('vb_count')||20),translation:localStorage.getItem('vb_trans')||'nl',sound:localStorage.getItem('vb_sound')!=='0',queue:[],index:0,answers:[],correct:0,streak:0,bestStreak:0,lastResults:JSON.parse(localStorage.getItem('vb_last')||'[]')};
+const stats=JSON.parse(localStorage.getItem('vb_stats')||'{"total":0,"best":0,"streak":0}');
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._tm);t._tm=setTimeout(()=>t.classList.remove('show'),1900)}
+function persist(){localStorage.setItem('vb_verbs',JSON.stringify([...state.selectedVerbs]));localStorage.setItem('vb_tenses',JSON.stringify([...state.selectedTenses]));localStorage.setItem('vb_mode',state.mode);localStorage.setItem('vb_count',state.questionCount);localStorage.setItem('vb_trans',state.translation);localStorage.setItem('vb_sound',state.sound?'1':'0')}
+function updateHome(){
+  $('#verbsSummary').textContent=`${state.selectedVerbs.size} geselecteerd`;$('#tensesSummary').textContent=`${state.selectedTenses.size} geselecteerd`;$('#verbCountDone').textContent=state.selectedVerbs.size;$('#tenseCountDone').textContent=state.selectedTenses.size;$('#questionCount').value=state.questionCount;$('#questionCountLabel').textContent=state.questionCount;$('#translation').value=state.translation;$('#startBtn').disabled=!state.selectedVerbs.size||!state.selectedTenses.size;$('#streakMini').textContent=stats.streak||0;$('#totalMini').textContent=stats.total||0;$('#bestMini').textContent=(stats.best||0)+'%';$('#soundToggle span').textContent=state.sound?'🔊':'🔇';
+}
+function showScreen(id){$$('.screen').forEach(s=>s.classList.toggle('active',s.id===id));$$('.navBtn').forEach(b=>b.classList.toggle('active',b.dataset.screen===id));if(id==='conjScreen')renderConjugator();if(id==='resultsScreen')renderResults();window.scrollTo({top:0,behavior:'smooth'})}
+$$('.navBtn').forEach(b=>b.onclick=()=>{if(b.dataset.screen==='quizScreen'&&!state.queue.length){toast('Start eerst een oefening');showScreen('homeScreen');return}showScreen(b.dataset.screen)});
+function verbMeta(v){const ref=splitReflexive(v).ref,b=splitReflexive(v).base;let group=isIrregular(v)?'Onregelmatig':b.endsWith('er')?'Regelmatig · -er':b.endsWith('ir')?'Regelmatig · -ir':'Regelmatig · -re';if(ref)group+=' · pronominaal';return group}
+function renderVerbList(){const q=$('#verbSearch').value.toLowerCase().trim();const active=$('#verbFilters .chip.active')?.dataset.filter||'all';let arr=VERBS.filter(v=>v.toLowerCase().includes(q));arr=arr.filter(v=>{const b=splitReflexive(v).base;if(active==='all')return true;if(active==='irregular')return isIrregular(v);if(active==='pronominal')return splitReflexive(v).ref;if(active==='er')return !isIrregular(v)&&b.endsWith('er');if(active==='ir')return !isIrregular(v)&&b.endsWith('ir');if(active==='re')return !isIrregular(v)&&b.endsWith('re');return true});$('#verbList').innerHTML=arr.map(v=>`<div class="pick ${state.selectedVerbs.has(v)?'on':''}" data-v="${v.replace(/"/g,'&quot;')}"><div class="check">✓</div><div class="pickText"><b>${v}</b><small>${verbMeta(v)}</small></div></div>`).join('')||'<div class="empty">Geen werkwoorden gevonden.</div>';$$('#verbList .pick').forEach(p=>p.onclick=()=>{const v=p.dataset.v;state.selectedVerbs.has(v)?state.selectedVerbs.delete(v):state.selectedVerbs.add(v);p.classList.toggle('on');updateHome();persist()})}
+function renderTenses(){const descriptions={"Présent":"tegenwoordige tijd","Futur Proche":"nabije toekomst","Passé Composé":"voltooid verleden","Imparfait":"onvoltooid verleden","Futur":"toekomende tijd","Conditionnel / Futur du Passé":"voorwaardelijke wijs","Plus-que-Parfait":"voltooid verleden vóór iets anders","Impératif":"gebiedende wijs","Subjonctif Présent":"aanvoegende wijs","Participe Présent":"tegenwoordig deelwoord","Passé Simple":"literaire verleden tijd","Conditionnel Passé":"voltooid voorwaardelijk","Futur Antérieur":"voltooide toekomst","Subjonctif Passé":"voltooide aanvoegende wijs"};$('#tenseList').innerHTML=TENSES.map(t=>`<div class="pick ${state.selectedTenses.has(t)?'on':''}" data-t="${t}"><div class="check">✓</div><div class="pickText"><b>${t}</b><small>${descriptions[t]}</small></div></div>`).join('');$$('#tenseList .pick').forEach(p=>p.onclick=()=>{const t=p.dataset.t;state.selectedTenses.has(t)?state.selectedTenses.delete(t):state.selectedTenses.add(t);p.classList.toggle('on');updateHome();persist()})}
+function openSheet(id){$(id).classList.add('show');document.body.style.overflow='hidden'}function closeSheets(){$$('.sheetWrap').forEach(s=>s.classList.remove('show'));document.body.style.overflow=''}
+$('#verbsCard').onclick=()=>{renderVerbList();openSheet('#verbsSheet')};$('#tensesCard').onclick=()=>{renderTenses();openSheet('#tensesSheet')};$$('.sheet .close').forEach(b=>b.onclick=closeSheets);$$('.sheetWrap').forEach(w=>w.addEventListener('click',e=>{if(e.target===w)closeSheets()}));$('#doneVerbs').onclick=closeSheets;$('#doneTenses').onclick=closeSheets;$('#clearVerbs').onclick=()=>{state.selectedVerbs.clear();renderVerbList();updateHome();persist()};$('#selectAllVerbs').onclick=()=>{state.selectedVerbs=new Set(VERBS);renderVerbList();updateHome();persist();toast(`Alle ${VERBS.length} werkwoorden geselecteerd`)};$('#clearTenses').onclick=()=>{state.selectedTenses.clear();renderTenses();updateHome();persist()};$('#verbSearch').oninput=renderVerbList;$$('#verbFilters .chip').forEach(c=>c.onclick=()=>{$$('#verbFilters .chip').forEach(x=>x.classList.remove('active'));c.classList.add('active');renderVerbList()});
+$$('#modeSeg .mode').forEach(b=>{b.classList.toggle('active',b.dataset.mode===state.mode);b.onclick=()=>{$$('#modeSeg .mode').forEach(x=>x.classList.remove('active'));b.classList.add('active');state.mode=b.dataset.mode;persist()}});$('#questionCount').oninput=e=>{$('#questionCountLabel').textContent=e.target.value;state.questionCount=+e.target.value;persist()};$('#translation').onchange=e=>{state.translation=e.target.value;persist()};$('#soundToggle').onclick=()=>{state.sound=!state.sound;persist();updateHome()};
+function hydrateQuestion(q){
+  const subject=q.subject||(q.tense==='Impératif'?['tu','nous','vous'][q.person]:BASE_SUBJECTS[q.person]);
+  const expected=q.tense==='Participe Présent'?conjugate(q.verb,q.tense)[0]:q.tense==='Impératif'?conjugate(q.verb,q.tense)[q.person]:formForSubject(q.verb,q.tense,q.person,subject);
+  return {...q,subject,expected,tenseDisplay:tenseLabel(q.tense)};
+}
+function makeQuestions(customWrong){
+  const vv=customWrong?.length?[...new Set(customWrong.map(x=>x.verb))]:[...state.selectedVerbs],tt=customWrong?.length?[...new Set(customWrong.map(x=>x.tense))]:[...state.selectedTenses];let all=[];
+  if(customWrong?.length){
+    all=customWrong.map(x=>hydrateQuestion({verb:x.verb,tense:x.tense,person:x.person,subject:x.subject}));
+  } else {
+    for(const v of vv)for(const t of tt){
+      for(const sv of subjectVariantsFor(v,t))all.push(hydrateQuestion({verb:v,tense:t,person:sv.person,subject:sv.subject}));
+    }
+  }
+  if(state.mode==='fixed'){}else all.sort(()=>Math.random()-.5);
+  if(state.mode==='random'&&!customWrong?.length){let q=[];for(let i=0;i<state.questionCount&&all.length;i++)q.push({...all[Math.floor(Math.random()*all.length)]});return q}
+  return all.slice(0,customWrong?.length?all.length:state.questionCount)
+}
+function startQuiz(customWrong){state.queue=makeQuestions(customWrong);state.index=0;state.answers=[];state.correct=0;state.streak=0;state.bestStreak=0;$('#checkBtn').onclick=check;if(!state.queue.length){toast('Geen geldige vragen voor deze combinatie');return}showScreen('quizScreen');renderQuestion()}
+$('#startBtn').onclick=()=>startQuiz();
+function current(){return state.queue[state.index]}
+function personLabel(q){if(q.tense==='Participe Présent')return 'participe présent';if(q.tense==='Impératif')return ['tu','nous','vous'][q.person];return q.subject||BASE_SUBJECTS[q.person]}
+function correctAnswer(q){if(q?.expected)return q.expected;if(q.tense==='Participe Présent')return conjugate(q.verb,q.tense)[0];if(q.tense==='Impératif')return conjugate(q.verb,q.tense)[q.person];return formForSubject(q.verb,q.tense,q.person,q.subject||BASE_SUBJECTS[q.person])}
+function fullCorrectAnswer(q,expected=correctAnswer(q)){
+  if(q.tense==='Participe Présent'||q.tense==='Impératif')return expected;
+  let subject=q.subject||BASE_SUBJECTS[q.person]||'';
+  if(subject==='je' && !/^(me |m'|te |t'|se |s'|nous |vous )/.test(expected) && /^[aeiouyàâäéèêëîïôöùûüœh]/i.test(expected)) subject="j'";
+  return subject==="j'"?subject+expected:subject+' '+expected;
+}
+function tr(v){if(state.translation==='none')return '';const x=translations[cleanVerb(v)]||translations[splitReflexive(v).base];return x?x[state.translation==='en'?1:0]:''}
+function renderQuestion(){const q=current();if(!q){finishQuiz();return}$('#qCounter').textContent=`Vraag ${state.index+1}/${state.queue.length}`;$('#progressBar').style.width=`${state.index/state.queue.length*100}%`;$('#streakText').textContent=`reeks ${state.streak}`;$('#scoreBubble').textContent=state.index?Math.round(state.correct/state.index*100)+'%':'0%';$('#tenseBadge').textContent=q.tenseDisplay||tenseLabel(q.tense);$('#groupBadge').textContent=verbMeta(q.verb).split(' · ')[0].toLowerCase();$('#qVerb').textContent=q.verb;$('#qTranslation').textContent=tr(q.verb)||' ';$('#qPerson').textContent=personLabel(q);const a=$('#answerInput');a.value='';a.disabled=false;a.className='answer';$('#feedback').className='feedback';$('#checkBtn').textContent=state.mode==='flash'?'Toon antwoord':'Nakijken';$('#hintBtn').disabled=false;setTimeout(()=>a.focus(),120)}
+function normalize(s){return s.toLowerCase().trim().replace(/[’']/g,"'").replace(/\s+/g,' ')}
+function stripPronoun(s){return normalize(s).replace(/^(je|j'|tu|il|elle|on|nous|vous|ils|elles)\s*/,'').replace(/^j'\s*/,'')}
+function check(){const q=current(),a=$('#answerInput'),expected=correctAnswer(q);if(state.mode==='flash'&&!a.value.trim()){showFeedback(false,true,expected);return}if(!a.value.trim()){toast('Vul eerst een antwoord in');return}const accepted=acceptableFormsForQuestion(q);const ok=accepted.some(x=>normalize(a.value)===normalize(x)||stripPronoun(a.value)===normalize(x));state.answers.push({verb:q.verb,tense:q.tense,person:q.person,subject:q.subject,user:a.value.trim(),correct:expected,ok});if(ok){state.correct++;state.streak++;state.bestStreak=Math.max(state.bestStreak,state.streak)}else state.streak=0;a.disabled=true;a.classList.add(ok?'good':'bad');showFeedback(ok,false,expected);$('#checkBtn').textContent=state.index===state.queue.length-1?'Bekijk resultaat':'Volgende →';$('#hintBtn').disabled=true;$('#checkBtn').onclick=nextQuestion}
+function showFeedback(ok,flash,expected){const f=$('#feedback');f.className='feedback show '+(flash?'good':ok?'good':'bad');$('#feedbackTitle').textContent=flash?'Antwoord':ok?'Perfect!':'Bijna — kijk even:';$('#feedbackText').innerHTML=flash?`<span class="correctAns">${expected}</span>`:ok?'Sterk. Op naar de volgende.':`Het juiste antwoord is <span class="correctAns">${fullCorrectAnswer(current(),expected)}</span>.`;if(flash){$('#answerInput').value=expected;$('#answerInput').disabled=true;state.answers.push({verb:current().verb,tense:current().tense,person:current().person,subject:current().subject,user:'—',correct:expected,ok:true});state.correct++;state.streak++;state.bestStreak=Math.max(state.bestStreak,state.streak);$('#checkBtn').textContent=state.index===state.queue.length-1?'Bekijk resultaat':'Volgende →';$('#checkBtn').onclick=nextQuestion}}
+function nextQuestion(){state.index++;if(state.index>=state.queue.length){finishQuiz();return}$('#checkBtn').onclick=check;renderQuestion()}
+$('#checkBtn').onclick=check;$('#answerInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('#checkBtn').click()});$('#hintBtn').onclick=()=>{const e=correctAnswer(current());let shown=e.slice(0,Math.max(1,Math.ceil(e.length*.35)))+'…';toast('Hint: '+shown)};$('#accents').onclick=e=>{if(!e.target.classList.contains('accent'))return;const a=$('#answerInput'),s=a.selectionStart??a.value.length,en=a.selectionEnd??a.value.length;a.value=a.value.slice(0,s)+e.target.textContent+a.value.slice(en);a.focus();a.setSelectionRange(s+1,s+1)};
+function speak(text){if(!state.sound||!('speechSynthesis'in window))return;const u=new SpeechSynthesisUtterance(text);u.lang='fr-FR';u.rate=.88;speechSynthesis.cancel();speechSynthesis.speak(u)}$('#speakBtn').onclick=()=>speak(cleanVerb(current().verb)+' '+correctAnswer(current()));
+$('#quitQuiz').onclick=()=>{if(state.index>0&&state.index<state.queue.length&&!confirm('Oefening stoppen?'))return;showScreen('homeScreen')};
+function finishQuiz(){const pct=Math.round(state.correct/state.queue.length*100);state.lastResults=[...state.answers];localStorage.setItem('vb_last',JSON.stringify(state.lastResults));stats.total=(stats.total||0)+state.correct;stats.best=Math.max(stats.best||0,pct);stats.streak=Math.max(stats.streak||0,state.bestStreak);localStorage.setItem('vb_stats',JSON.stringify(stats));$('#progressBar').style.width='100%';updateHome();showScreen('resultsScreen')}
+function renderResults(){const a=state.lastResults||[],ok=a.filter(x=>x.ok).length,pct=a.length?Math.round(ok/a.length*100):0,wrong=a.length-ok;$('#resultRing').style.setProperty('--p',pct);$('#resultPct').textContent=pct+'%';$('#resultTitle').textContent=a.length?(pct>=90?'Uitstekend gedaan':pct>=70?'Heel goed bezig':pct>=50?'Goede basis':'Nog even oefenen'):'Je resultaat';$('#resultSub').textContent=a.length?`${a.length} vragen · ${ok} juist beantwoord`:'Nog geen oefening afgerond.';$('#resCorrect').textContent=ok;$('#resWrong').textContent=wrong;$('#resStreak').textContent=state.bestStreak||0;$('#resultCount').textContent=`${a.length} vragen`;const list=$('#resultList');list.innerHTML=a.length?a.slice().reverse().map(x=>`<div class="listItem"><div class="statusDot ${x.ok?'good':'bad'}"></div><div class="listMain"><b>${x.verb} · ${x.tense}</b><span>${personLabel(x)}</span></div><div class="listAns">${x.ok?`<span class="right">${x.correct}</span>`:`<span class="wrong">${x.user||'—'}</span><span class="right">${x.correct}</span>`}</div></div>`).join(''):'<div class="empty">Voltooi eerst een oefening om je resultaten te zien.</div>';const btn=$('#retryWrong');btn.classList.toggle('hidden',!wrong);btn.onclick=()=>startQuiz(a.filter(x=>!x.ok))}
+function renderConjugator(){const vs=$('#conjVerb'),ts=$('#conjTense');if(!vs.options.length){vs.innerHTML=VERBS.map(v=>`<option>${v}</option>`).join('');ts.innerHTML=TENSES.map(t=>`<option>${t}</option>`).join('');vs.value='avoir';ts.value='Présent';vs.onchange=renderConjCard;ts.onchange=renderConjCard}renderConjCard()}
+function renderConjCard(){const v=$('#conjVerb').value||'avoir',t=$('#conjTense').value||'Présent';let rows=[];if(t==='Participe Présent'){rows=[{label:'forme',form:conjugate(v,t)[0]}]}else if(t==='Impératif'){const f=conjugate(v,t);rows=isImpersonal(v)?[]:['tu','nous','vous'].map((label,i)=>({label,form:f[i]}))}else{rows=subjectVariantsFor(v,t).map(sv=>({label:sv.subject,form:formForSubject(v,t,sv.person,sv.subject)}))}$('#conjCard').innerHTML=`<div class="conjHead"><b>${v}</b><span>${tenseLabel(t)} · ${verbMeta(v)}</span></div>`+(rows.length?rows.map(r=>`<div class="conjRow" data-speak="${r.form.replace(/"/g,'&quot;')}"><span>${r.label}</span><b>${r.form}</b></div>`).join(''):'<div class="empty">Deze tijd wordt niet gebruikt voor dit onpersoonlijke werkwoord.</div>');$$('#conjCard .conjRow').forEach(r=>r.onclick=()=>speak(r.dataset.speak))}
+updateHome();renderResults();
+</script>
+</body>
+</html>
